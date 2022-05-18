@@ -10,18 +10,28 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Link,
 } from "@mui/material";
 import { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Link as RouterLink } from "react-router-dom";
 
-function EmployeeCard(props: {
+export enum DEPARTMENT {
+  HR = "HR",
+  PS = "PS",
+}
+
+export interface employee {
+  id: number;
   name: string;
-  dept: string;
   salary: number;
-  deleteEmp: Function;
-}) {
+  department: DEPARTMENT;
+}
+
+function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
   const [deleteDialog, setDeleteDialog] = useState(false);
+  const { emp, deleteEmp } = props;
 
   const YellowButton = styled(IconButton)({
     color: "#FFC32E",
@@ -31,12 +41,13 @@ function EmployeeCard(props: {
   });
   const GreyCard = styled(Card)({
     backgroundColor: "#EAEAEA",
+    width: "100%",
+    maxWidth: "30rem",
   });
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0,
-    //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
   });
 
   return (
@@ -60,7 +71,7 @@ function EmployeeCard(props: {
                 lineHeight: 1.2,
               }}
             >
-              {props.name}
+              {emp.name}
             </Text>
           </Grid>
           <Grid item>
@@ -70,7 +81,7 @@ function EmployeeCard(props: {
               color="primary"
               sx={{ lineHeight: 1.2 }}
             >
-              {props.dept}
+              {emp.department}
             </Text>
           </Grid>
           <Grid item>
@@ -80,15 +91,17 @@ function EmployeeCard(props: {
               color="primary"
               sx={{ lineHeight: 1.2 }}
             >
-              {formatter.format(props.salary)}
+              {formatter.format(emp.salary)}
             </Text>
           </Grid>
         </Grid>
         <Grid container direction="row" item xs="auto" wrap="nowrap">
           <Grid item>
-            <YellowButton aria-label="edit">
-              <EditIcon />
-            </YellowButton>
+            <Link component={RouterLink} to={"/update/" + emp.id}>
+              <YellowButton aria-label="edit">
+                <EditIcon />
+              </YellowButton>
+            </Link>
           </Grid>
           <Grid item>
             <RedButton
@@ -111,7 +124,13 @@ function EmployeeCard(props: {
               </DialogContent>
               <DialogActions>
                 <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
-                <Button onClick={() => setDeleteDialog(false)} autoFocus>
+                <Button
+                  onClick={() => {
+                    setDeleteDialog(false);
+                    deleteEmp(emp.id);
+                  }}
+                  autoFocus
+                >
                   Erase
                 </Button>
               </DialogActions>
