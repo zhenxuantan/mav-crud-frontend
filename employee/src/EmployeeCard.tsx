@@ -51,7 +51,7 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
   });
 
   return (
-    <GreyCard elevation={0}>
+    <GreyCard elevation={0} sx={{ height: "100%" }}>
       <Grid
         container
         direction="row"
@@ -59,8 +59,21 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
         justifyContent="space-between"
         alignItems="center"
         p={1}
+        pl={0}
+        pt={0}
+        spacing={1}
+        margin={0}
+        sx={{ height: "100%" }}
       >
-        <Grid container direction="column" item spacing={0}>
+        <Grid
+          container
+          direction="column"
+          item
+          spacing={0}
+          wrap="wrap"
+          xs={8}
+          p={0}
+        >
           <Grid item>
             <Text
               variant="h5"
@@ -69,7 +82,9 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
               sx={{
                 fontWeight: "bold",
                 lineHeight: 1.2,
+                wordWrap: "break-word",
               }}
+              maxWidth="20rem"
             >
               {emp.name}
             </Text>
