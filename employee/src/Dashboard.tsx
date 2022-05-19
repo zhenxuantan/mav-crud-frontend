@@ -2,6 +2,7 @@ import { Typography as Text, Grid, Button } from "@mui/material";
 import React, { useState } from "react";
 import EmployeeCard, { employee } from "./EmployeeCard";
 import { styled } from "@mui/material/styles";
+import { deleteEmpBackend } from "./Backend";
 
 function Dashboard(props: { employees: employee[]; setEmployees: Function }) {
   const { employees, setEmployees } = props;
@@ -21,6 +22,9 @@ function Dashboard(props: { employees: employee[]; setEmployees: Function }) {
     setPage(
       Math.max(Math.min(Math.ceil((employees.length - 1) / 10) - 1, page), 0)
     );
+    deleteEmpBackend(id)
+      .then((result) => console.log(result))
+      .catch((error) => console.log("error", error));
     setEmployees(employees.filter((emp) => emp.id !== id));
   };
 

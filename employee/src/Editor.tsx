@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
+import { createEmpBackend, updateEmpBackend } from "./Backend";
 
 function Editor(props: {
   create: boolean;
@@ -31,11 +32,14 @@ function Editor(props: {
     salary: 0,
     department: DEPARTMENT.HR,
   };
-  const [employee, setEmployee] = useState(
-    userId
-      ? employees.find((e) => e.id.toString() === userId) || emptyEmployee
-      : emptyEmployee
-  );
+  const initialEmployee = () => {
+    if (create) return emptyEmployee;
+    const tempEmp = employees.find((e) => e.id.toString() === userId);
+    if (tempEmp) return tempEmp;
+    nav("/create", { replace: true });
+    return emptyEmployee;
+  };
+  const [employee, setEmployee] = useState(initialEmployee());
 
   const BackButton = styled(Button)({
     textTransform: "none",
@@ -50,7 +54,27 @@ function Editor(props: {
   }
 
   function salaryError() {
-    return employee.salary < 0;
+    return employee.salary < 0 || employee.salary > 2000000000;
+  }
+
+  function handleSubmit() {
+    employee.salary = Math.round(employee.salary);
+    if (create) {
+      createEmpBackend(employee)
+        .then((result: employee) => setEmployees([...employees, result]))
+        .catch((error) => console.log("error", error));
+    } else {
+      updateEmpBackend(employee)
+        .then((result: employee) =>
+          setEmployees(
+            employees.map((emp) =>
+              emp.id.toString() === userId ? result : emp
+            )
+          )
+        )
+        .catch((error) => console.log("error", error));
+    }
+    nav("/", { replace: true });
   }
 
   return (
@@ -103,7 +127,7 @@ function Editor(props: {
           }
           helperText={
             salaryError() &&
-            "Please ensure that the salary is a positive number."
+            "Please ensure that the salary is positive and within 2 billion."
           }
         />
       </Grid>
@@ -142,17 +166,7 @@ function Editor(props: {
             <BackButton
               endIcon={<SaveIcon />}
               color="primary"
-              onClick={() => {
-                employee.salary = Math.round(employee.salary);
-                setEmployees(
-                  create
-                    ? [...employees, employee]
-                    : employees.map((emp) =>
-                        emp.id.toString() === userId ? employee : emp
-                      )
-                );
-                nav("/", { replace: true });
-              }}
+              onClick={handleSubmit}
               disabled={nameError() || salaryError()}
             >
               Submit

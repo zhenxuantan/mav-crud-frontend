@@ -1,17 +1,21 @@
 import { CssBaseline, Container } from "@mui/material";
-import { useState } from "react";
-import "./App.css";
-
+import { useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { SAMPLE_EMPLOYEES } from "./SampleData";
 import Dashboard from "./Dashboard";
 import Navbar from "./Navbar";
 import Editor from "./Editor";
 import { Route, Routes } from "react-router";
 import { BrowserRouter } from "react-router-dom";
+import { getAllEmpBackend } from "./Backend";
+import NotFoundPage from "./NotFoundPage";
 
 function App() {
-  const [employees, setEmployees] = useState(SAMPLE_EMPLOYEES);
+  const [employees, setEmployees] = useState([]);
+  useEffect(() => {
+    getAllEmpBackend()
+      .then((result) => setEmployees(result.employees))
+      .catch((error) => console.log("error", error));
+  }, [employees.length]);
 
   const theme = createTheme({
     typography: { fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif` },
@@ -27,7 +31,7 @@ function App() {
       <CssBaseline />
       <ThemeProvider theme={theme}>
         <Navbar />
-        <div className="App">
+        <div>
           <Container maxWidth="lg">
             <Routes>
               <Route
@@ -59,6 +63,7 @@ function App() {
                   />
                 }
               />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Container>
         </div>

@@ -6,7 +6,6 @@ import {
   IconButton,
   Link,
 } from "@mui/material";
-import "./App.css";
 
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import { styled } from "@mui/material/styles";
