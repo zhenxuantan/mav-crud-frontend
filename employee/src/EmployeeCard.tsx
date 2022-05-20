@@ -51,7 +51,7 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
   });
 
   return (
-    <GreyCard elevation={0} sx={{ height: "100%" }}>
+    <GreyCard elevation={0} sx={{ height: "100%", borderRadius: "3px" }}>
       <Grid
         container
         direction="row"
@@ -110,10 +110,10 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
             </Text>
           </Grid>
         </Grid>
-        <Grid container direction="row" item xs="auto" wrap="nowrap">
+        <Grid container direction="row" item xs="auto" wrap="nowrap" mr={0.5}>
           <Grid item>
             <Link component={RouterLink} to={"/update/" + emp.id}>
-              <YellowButton aria-label="edit">
+              <YellowButton>
                 <EditIcon />
               </YellowButton>
             </Link>
@@ -125,15 +125,10 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
             >
               <DeleteIcon />
             </RedButton>
-            <Dialog
-              open={deleteDialog}
-              onClose={() => setDeleteDialog(false)}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">Are you sure?</DialogTitle>
+            <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)}>
+              <DialogTitle>Are you sure?</DialogTitle>
               <DialogContent>
-                <DialogContentText id="alert-dialog-description">
+                <DialogContentText>
                   You'll lose all details about this employee!
                 </DialogContentText>
               </DialogContent>

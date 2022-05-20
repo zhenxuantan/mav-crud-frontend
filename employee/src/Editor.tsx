@@ -17,6 +17,8 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
 import { createEmpBackend, updateEmpBackend } from "./Backend";
+import { openSnackbar } from "./redux/action";
+import { useDispatch } from "react-redux";
 
 function Editor(props: {
   create: boolean;
@@ -24,6 +26,7 @@ function Editor(props: {
   setEmployees: Function;
 }) {
   const { userId } = useParams();
+  const dispatch = useDispatch();
   const { create, employees, setEmployees } = props;
   const nav = useNavigate();
   const emptyEmployee: employee = {
@@ -61,20 +64,46 @@ function Editor(props: {
     employee.salary = Math.round(employee.salary);
     if (create) {
       createEmpBackend(employee)
-        .then((result: employee) => setEmployees([...employees, result]))
+        .then((response) => {
+          if (response.status === 200) {
+            dispatch(openSnackbar("Successfully added employee", "success"));
+            return response.json();
+          }
+          response.json().then((val) => {
+            throw new Error(val.errorMessage);
+          });
+        })
+        .then((result: employee) => {
+          setEmployees([...employees, result]);
+          nav("/", { replace: true });
+        })
         .catch((error) => console.log("error", error));
     } else {
       updateEmpBackend(employee)
-        .then((result: employee) =>
+        .then((response) => {
+          if (response.status === 200) {
+            dispatch(openSnackbar("Successfully updated employee", "success"));
+            return response.json();
+          } else if (response.status === 304) {
+            dispatch(openSnackbar("No change detected", "info"));
+            throw new Error("");
+          }
+          throw new Error("Error updating employee");
+        })
+        .then((result: employee) => {
           setEmployees(
             employees.map((emp) =>
               emp.id.toString() === userId ? result : emp
             )
-          )
-        )
-        .catch((error) => console.log("error", error));
+          );
+          nav("/", { replace: true });
+        })
+        .catch(
+          (error) =>
+            String(error) === "" &&
+            dispatch(openSnackbar(String(error), "error"))
+        );
     }
-    nav("/", { replace: true });
   }
 
   return (

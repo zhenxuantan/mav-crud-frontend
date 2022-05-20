@@ -6,13 +6,13 @@ export const getAllEmpBackend = () =>
   fetch(backEndSite, {
     method: "GET",
     redirect: "follow",
-  }).then((response) => response.json());
+  });
 
 export const deleteEmpBackend = (id: number) =>
   fetch(backEndSite + id, {
     method: "DELETE",
     redirect: "follow",
-  }).then((response) => response.text());
+  });
 
 export const updateEmpBackend = (emp: employee) => {
   const { id, ...rest } = emp;
@@ -21,7 +21,7 @@ export const updateEmpBackend = (emp: employee) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(rest),
     redirect: "follow",
-  }).then((response) => response.json());
+  });
 };
 
 export const createEmpBackend = (emp: employee) => {
@@ -31,5 +31,5 @@ export const createEmpBackend = (emp: employee) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(rest),
     redirect: "follow",
-  }).then((response) => response.json());
+  });
 };
