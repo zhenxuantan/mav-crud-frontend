@@ -1,6 +1,6 @@
 import { DEPARTMENT, employee } from "./EmployeeCard";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -35,14 +35,18 @@ function Editor(props: {
     salary: 0,
     department: DEPARTMENT.HR,
   };
-  const initialEmployee = () => {
-    if (create) return emptyEmployee;
+
+  const [employee, setEmployee] = useState(emptyEmployee);
+
+  useEffect(() => {
+    if (create) return;
     const tempEmp = employees.find((e) => e.id.toString() === userId);
-    if (tempEmp) return tempEmp;
+    if (tempEmp) return setEmployee(tempEmp);
+    dispatch(
+      openSnackbar("Employee not found, redirected to create page.", "error")
+    );
     nav("/create", { replace: true });
-    return emptyEmployee;
-  };
-  const [employee, setEmployee] = useState(initialEmployee());
+  }, [create, employees, dispatch, nav, userId]);
 
   const BackButton = styled(Button)({
     textTransform: "none",
@@ -127,6 +131,7 @@ function Editor(props: {
       <Grid item xs={12} sm={6}>
         <TextField
           fullWidth
+          autoFocus
           variant="standard"
           label="Name (4 - 30 characters)"
           error={nameError()}

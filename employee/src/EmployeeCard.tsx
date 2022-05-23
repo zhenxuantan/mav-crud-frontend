@@ -51,104 +51,116 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
   });
 
   return (
-    <GreyCard elevation={0} sx={{ height: "100%", borderRadius: "3px" }}>
-      <Grid
-        container
-        direction="row"
-        wrap="nowrap"
-        justifyContent="space-between"
-        alignItems="center"
-        p={1}
-        pl={0}
-        pt={0}
-        spacing={1}
-        margin={0}
-        sx={{ height: "100%" }}
-      >
+    <Grid
+      item
+      container
+      xs={12}
+      sm={12}
+      md={6}
+      alignItems="center"
+      justifyContent="center"
+    >
+      <GreyCard elevation={0} sx={{ height: "100%", borderRadius: "3px" }}>
         <Grid
           container
-          direction="column"
-          item
-          spacing={0}
-          wrap="wrap"
-          xs={8}
-          p={0}
+          direction="row"
+          wrap="nowrap"
+          justifyContent="space-between"
+          alignItems="center"
+          pb={1}
+          pr={1}
+          m={0}
+          spacing={1}
+          sx={{ height: "100%" }}
         >
-          <Grid item>
-            <Text
-              variant="h5"
-              align="left"
-              color="primary"
-              sx={{
-                fontWeight: "bold",
-                lineHeight: 1.2,
-                wordWrap: "break-word",
-              }}
-              maxWidth="20rem"
-            >
-              {emp.name}
-            </Text>
+          <Grid
+            container
+            direction="column"
+            item
+            spacing={0}
+            wrap="wrap"
+            xs={8}
+            p={0}
+          >
+            <Grid item>
+              <Text
+                variant="h5"
+                align="left"
+                color="primary"
+                sx={{
+                  fontWeight: "bold",
+                  lineHeight: 1.2,
+                  wordWrap: "break-word",
+                }}
+                maxWidth="20rem"
+              >
+                {emp.name}
+              </Text>
+            </Grid>
+            <Grid item>
+              <Text
+                variant="body1"
+                align="left"
+                color="primary"
+                sx={{ lineHeight: 1.2 }}
+              >
+                {emp.department}
+              </Text>
+            </Grid>
+            <Grid item>
+              <Text
+                variant="body1"
+                align="left"
+                color="primary"
+                sx={{ lineHeight: 1.2 }}
+              >
+                {formatter.format(emp.salary)}
+              </Text>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Text
-              variant="body1"
-              align="left"
-              color="primary"
-              sx={{ lineHeight: 1.2 }}
-            >
-              {emp.department}
-            </Text>
-          </Grid>
-          <Grid item>
-            <Text
-              variant="body1"
-              align="left"
-              color="primary"
-              sx={{ lineHeight: 1.2 }}
-            >
-              {formatter.format(emp.salary)}
-            </Text>
+          <Grid container direction="row" item xs="auto" wrap="nowrap" mr={0.5}>
+            <Grid item>
+              <Link component={RouterLink} to={"/update/" + emp.id}>
+                <YellowButton>
+                  <EditIcon />
+                </YellowButton>
+              </Link>
+            </Grid>
+            <Grid item>
+              <RedButton
+                aria-label="delete"
+                onClick={() => setDeleteDialog(true)}
+              >
+                <DeleteIcon />
+              </RedButton>
+              <Dialog
+                open={deleteDialog}
+                onClose={() => setDeleteDialog(false)}
+              >
+                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    You'll lose all details about this employee!
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
+                  <Button
+                    onClick={() => {
+                      setDeleteDialog(false);
+                      deleteEmp(emp.id);
+                    }}
+                    autoFocus
+                  >
+                    Erase
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </Grid>
           </Grid>
         </Grid>
-        <Grid container direction="row" item xs="auto" wrap="nowrap" mr={0.5}>
-          <Grid item>
-            <Link component={RouterLink} to={"/update/" + emp.id}>
-              <YellowButton>
-                <EditIcon />
-              </YellowButton>
-            </Link>
-          </Grid>
-          <Grid item>
-            <RedButton
-              aria-label="delete"
-              onClick={() => setDeleteDialog(true)}
-            >
-              <DeleteIcon />
-            </RedButton>
-            <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)}>
-              <DialogTitle>Are you sure?</DialogTitle>
-              <DialogContent>
-                <DialogContentText>
-                  You'll lose all details about this employee!
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
-                <Button
-                  onClick={() => {
-                    setDeleteDialog(false);
-                    deleteEmp(emp.id);
-                  }}
-                  autoFocus
-                >
-                  Erase
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </Grid>
-        </Grid>
-      </Grid>
-    </GreyCard>
+      </GreyCard>
+    </Grid>
   );
 }
 

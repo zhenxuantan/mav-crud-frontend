@@ -9,7 +9,10 @@ function SnackBar() {
   const SHOW = useSelector((state: snackbarState) => state.toggleSnackbar);
   const MESSAGE = useSelector((state: snackbarState) => state.message);
   const SEVERITY = useSelector((state: snackbarState) => state.severity);
-  function handleClose() {
+  function handleClose(event?: React.SyntheticEvent | Event, reason?: string) {
+    if (reason === "clickaway") {
+      return;
+    }
     dispatch(closeSnackbar());
   }
   return (
