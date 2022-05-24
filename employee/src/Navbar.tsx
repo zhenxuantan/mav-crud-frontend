@@ -11,7 +11,7 @@ import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import { styled } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 
-function Navbar() {
+function Navbar(props: { error: boolean }) {
   const AddEmpButton = styled(Button)({
     textTransform: "none",
     backgroundColor: "#34933B",
@@ -31,25 +31,29 @@ function Navbar() {
         >
           Employees
         </Text>
-        <Link to="/create" component={RouterLink} underline="none">
-          <AddEmpButton
-            startIcon={<AddCircleOutlinedIcon />}
-            color="success"
-            variant="contained"
-            sx={{ display: { sm: "flex", xs: "none" } }}
-          >
-            Add Employee
-          </AddEmpButton>
-        </Link>
-        <IconButton
-          sx={{ display: { sm: "none", xs: "flex" }, width: "2rem" }}
-          component={RouterLink}
-          to="/create"
-        >
-          <AddCircleOutlinedIcon
-            sx={{ minWidth: "30px", minHeight: "30px", color: "white" }}
-          />
-        </IconButton>
+        {props.error || (
+          <>
+            <Link to="/create" component={RouterLink} underline="none">
+              <AddEmpButton
+                startIcon={<AddCircleOutlinedIcon />}
+                color="success"
+                variant="contained"
+                sx={{ display: { sm: "flex", xs: "none" } }}
+              >
+                Add Employee
+              </AddEmpButton>
+            </Link>
+            <IconButton
+              sx={{ display: { sm: "none", xs: "flex" }, width: "2rem" }}
+              component={RouterLink}
+              to="/create"
+            >
+              <AddCircleOutlinedIcon
+                sx={{ minWidth: "30px", minHeight: "30px", color: "white" }}
+              />
+            </IconButton>
+          </>
+        )}
       </Toolbar>
     </AppBar>
   );

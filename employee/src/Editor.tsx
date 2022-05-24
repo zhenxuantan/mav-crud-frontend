@@ -17,8 +17,12 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
 import { createEmpBackend, updateEmpBackend } from "./Backend";
-import { openSnackbar } from "./redux/action";
 import { useDispatch } from "react-redux";
+import {
+  openSnackbarError,
+  openSnackbarInfo,
+  openSnackbarSuccess,
+} from "./redux/reduxSlice";
 
 function Editor(props: {
   create: boolean;
@@ -31,7 +35,7 @@ function Editor(props: {
   const nav = useNavigate();
   const emptyEmployee: employee = {
     id: 0,
-    name: "Please insert name here",
+    name: "",
     salary: 0,
     department: DEPARTMENT.HR,
   };
@@ -43,7 +47,7 @@ function Editor(props: {
     const tempEmp = employees.find((e) => e.id.toString() === userId);
     if (tempEmp) return setEmployee(tempEmp);
     dispatch(
-      openSnackbar("Employee not found, redirected to create page.", "error")
+      openSnackbarError("Employee not found, redirected to create page.")
     );
     nav("/create", { replace: true });
   }, [create, employees, dispatch, nav, userId]);
@@ -70,10 +74,10 @@ function Editor(props: {
       createEmpBackend(employee)
         .then((response) => {
           if (response.status === 200) {
-            dispatch(openSnackbar("Successfully added employee", "success"));
-            return response.json();
+            dispatch(openSnackbarSuccess("Successfully added employee"));
+            return response.data;
           }
-          response.json().then((val) => {
+          response.data.then((val: { errorMessage: string | undefined }) => {
             throw new Error(val.errorMessage);
           });
         })
@@ -86,10 +90,10 @@ function Editor(props: {
       updateEmpBackend(employee)
         .then((response) => {
           if (response.status === 200) {
-            dispatch(openSnackbar("Successfully updated employee", "success"));
-            return response.json();
+            dispatch(openSnackbarSuccess("Successfully updated employee"));
+            return response.data;
           } else if (response.status === 304) {
-            dispatch(openSnackbar("No change detected", "info"));
+            dispatch(openSnackbarInfo("No change detected"));
             throw new Error("");
           }
           throw new Error("Error updating employee");
@@ -104,8 +108,7 @@ function Editor(props: {
         })
         .catch(
           (error) =>
-            String(error) === "" &&
-            dispatch(openSnackbar(String(error), "error"))
+            String(error) === "" && dispatch(openSnackbarError(String(error)))
         );
     }
   }
@@ -134,13 +137,11 @@ function Editor(props: {
           autoFocus
           variant="standard"
           label="Name (4 - 30 characters)"
-          error={nameError()}
           value={employee.name}
           onChange={(event) =>
             setEmployee({ ...employee, name: event.target.value })
           }
           helperText={
-            nameError() &&
             "Please ensure that the name is within the character limit and that there are no special characters."
           }
         />
@@ -155,14 +156,11 @@ function Editor(props: {
             startAdornment: <InputAdornment position="start">$</InputAdornment>,
           }}
           error={salaryError()}
-          value={employee.salary}
+          value={employee.salary.toString()}
           onChange={(event) =>
-            setEmployee({ ...employee, salary: +event.target.value })
+            setEmployee({ ...employee, salary: parseInt(event.target.value) })
           }
-          helperText={
-            salaryError() &&
-            "Please ensure that the salary is positive and within 2 billion."
-          }
+          helperText={salaryError() && "Please enter a valid salary."}
         />
       </Grid>
       <Grid item xs={12} sm={2} mb="auto">

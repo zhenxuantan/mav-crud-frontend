@@ -1,35 +1,18 @@
 import { employee } from "./EmployeeCard";
+import axios from "axios";
 
 const backEndSite = "http://localhost:3001/employee/";
 
-export const getAllEmpBackend = () =>
-  fetch(backEndSite, {
-    method: "GET",
-    redirect: "follow",
-  });
+export const getAllEmpBackend = () => axios.get(backEndSite);
 
-export const deleteEmpBackend = (id: number) =>
-  fetch(backEndSite + id, {
-    method: "DELETE",
-    redirect: "follow",
-  });
+export const deleteEmpBackend = (id: number) => axios.delete(backEndSite + id);
 
 export const updateEmpBackend = (emp: employee) => {
   const { id, ...rest } = emp;
-  return fetch(backEndSite + id, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(rest),
-    redirect: "follow",
-  });
+  return axios.patch(backEndSite + id, rest);
 };
 
 export const createEmpBackend = (emp: employee) => {
   const { id, ...rest } = emp;
-  return fetch(backEndSite, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(rest),
-    redirect: "follow",
-  });
+  return axios.post(backEndSite, rest);
 };

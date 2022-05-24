@@ -1,14 +1,14 @@
 import { Snackbar, AlertColor } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { closeSnackbar } from "./redux/action";
-import { snackbarState } from "./redux/reducers";
+import { closeSnackbar } from "./redux/reduxSlice";
+import { State } from "./redux/reduxSlice";
 import MuiAlert from "@mui/material/Alert";
 
 function SnackBar() {
   const dispatch = useDispatch();
-  const SHOW = useSelector((state: snackbarState) => state.toggleSnackbar);
-  const MESSAGE = useSelector((state: snackbarState) => state.message);
-  const SEVERITY = useSelector((state: snackbarState) => state.severity);
+  const SHOW = useSelector((state: State) => state.toggleSnackbar);
+  const MESSAGE = useSelector((state: State) => state.message);
+  const SEVERITY = useSelector((state: State) => state.severity);
   function handleClose(event?: React.SyntheticEvent | Event, reason?: string) {
     if (reason === "clickaway") {
       return;

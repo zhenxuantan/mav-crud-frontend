@@ -5,26 +5,31 @@ import Dashboard from "./Dashboard";
 import Navbar from "./Navbar";
 import Editor from "./Editor";
 import { Route, Routes } from "react-router";
-import { BrowserRouter } from "react-router-dom";
 import { getAllEmpBackend } from "./Backend";
-import NotFoundPage from "./NotFoundPage";
+import ErrorPage from "./ErrorPage";
 import SnackBar from "./Snackbar";
-import { useDispatch } from "react-redux";
-import { openSnackbar } from "./redux/action";
+import { useDispatch, useSelector } from "react-redux";
+import { openSnackbarError, State } from "./redux/reduxSlice";
 
 function App() {
   const dispatch = useDispatch();
+  // const employees = useSelector((state: State) => state.employees);
   const [employees, setEmployees] = useState([]);
+  const [error, setError] = useState(false);
   useEffect(() => {
     getAllEmpBackend()
       .then((response) => {
-        if (response.status === 200) return response.json();
+        if (response.status === 200) return response.data;
         throw new Error();
       })
-      .then((result) => setEmployees(result.employees))
-      .catch((_error) =>
-        dispatch(openSnackbar("Error fetching employees", "error"))
-      );
+      .then((result) => {
+        setError(false);
+        setEmployees(result.employees);
+      })
+      .catch((_error) => {
+        setError(true);
+        dispatch(openSnackbarError("Server error."));
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employees.length]);
 
@@ -38,10 +43,10 @@ function App() {
   });
 
   return (
-    <BrowserRouter>
+    <>
       <CssBaseline />
       <ThemeProvider theme={theme}>
-        <Navbar />
+        <Navbar error={error} />
         <SnackBar />
         <div>
           <Container maxWidth="lg">
@@ -52,6 +57,7 @@ function App() {
                   <Dashboard
                     employees={employees}
                     setEmployees={setEmployees}
+                    error={error}
                   />
                 }
               />
@@ -75,12 +81,12 @@ function App() {
                   />
                 }
               />
-              <Route path="*" element={<NotFoundPage />} />
+              <Route path="*" element={<ErrorPage />} />
             </Routes>
           </Container>
         </div>
       </ThemeProvider>
-    </BrowserRouter>
+    </>
   );
 }
 

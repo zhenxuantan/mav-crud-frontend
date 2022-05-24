@@ -1,13 +1,19 @@
-import { Grid } from "@mui/material";
+import { Grid, Typography as Text, Button } from "@mui/material";
 import { useState } from "react";
 import EmployeeCard, { employee } from "./EmployeeCard";
 import { deleteEmpBackend } from "./Backend";
-import { openSnackbar } from "./redux/action";
 import { useDispatch } from "react-redux";
 import Footer from "./Footer";
+import { useNavigate } from "react-router";
+import { openSnackbarError, openSnackbarSuccess } from "./redux/reduxSlice";
 
-function Dashboard(props: { employees: employee[]; setEmployees: Function }) {
-  const { employees, setEmployees } = props;
+function Dashboard(props: {
+  employees: employee[];
+  setEmployees: Function;
+  error: boolean;
+}) {
+  const nav = useNavigate();
+  const { employees, setEmployees, error } = props;
   const [page, setPage] = useState(0);
   const dispatch = useDispatch();
 
@@ -18,24 +24,49 @@ function Dashboard(props: { employees: employee[]; setEmployees: Function }) {
     deleteEmpBackend(id)
       .then((response) => {
         if (response.status === 204) {
-          dispatch(openSnackbar("Employee deleted", "success"));
-          return response.text();
+          dispatch(openSnackbarSuccess("Employee deleted"));
+          return response.data;
         } else if (response.status === 404) {
-          dispatch(openSnackbar("Employee not found", "error"));
+          dispatch(openSnackbarError("Employee not found"));
           return "";
         }
         throw new Error();
       })
-      .catch((_error) => dispatch(openSnackbar("Server error", "error")));
+      .catch((_error) => dispatch(openSnackbarError("Server error")));
     setEmployees(employees.filter((emp) => emp.id !== id));
   };
 
   return (
     <Grid container spacing={2} justifyContent="space-between" p={1} mt={1}>
-      {employees.slice(page * 10, page * 10 + 10).map((emp: employee) => (
-        <EmployeeCard emp={emp} deleteEmp={deleteEmp} key={emp.id} />
-      ))}
-      <Footer page={page} setPage={setPage} employees={employees} />
+      {error ? (
+        <Grid
+          container
+          item
+          direction="column"
+          alignContent="center"
+          alignItems="center"
+          spacing={2}
+          pt={2}
+        >
+          <Grid item>
+            <Text variant="h5">
+              <b>Server error, please reload.</b>
+            </Text>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" onClick={() => nav(0)}>
+              Reload
+            </Button>
+          </Grid>
+        </Grid>
+      ) : (
+        <>
+          {employees.slice(page * 10, page * 10 + 10).map((emp: employee) => (
+            <EmployeeCard emp={emp} deleteEmp={deleteEmp} key={emp.id} />
+          ))}
+          <Footer page={page} setPage={setPage} employees={employees} />
+        </>
+      )}
     </Grid>
   );
 }

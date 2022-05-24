@@ -1,10 +1,17 @@
 import { Grid, Typography as Text, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-function NotFoundPage() {
+function ErrorPage() {
   const nav = useNavigate();
   return (
-    <Grid container direction="column" alignContent="center" spacing={2} pt={2}>
+    <Grid
+      container
+      direction="column"
+      alignContent="center"
+      alignItems="center"
+      spacing={2}
+      pt={2}
+    >
       <Grid item>
         <Text variant="h4" color="primary">
           <b>Invalid site!</b>
@@ -19,4 +26,4 @@ function NotFoundPage() {
   );
 }
 
-export default NotFoundPage;
+export default ErrorPage;
