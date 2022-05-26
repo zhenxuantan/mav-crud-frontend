@@ -16,23 +16,23 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
-import { createEmpBackend, updateEmpBackend } from "./Backend";
-import { useDispatch } from "react-redux";
+import { createEmpBackend, getIdEmpBackend, updateEmpBackend } from "./Backend";
+import { useDispatch, useSelector } from "react-redux";
 import {
+  addEmployee,
   openSnackbarError,
   openSnackbarInfo,
   openSnackbarSuccess,
+  State,
+  updateEmployee,
 } from "./redux/reduxSlice";
 
-function Editor(props: {
-  create: boolean;
-  employees: employee[];
-  setEmployees: Function;
-}) {
+function Editor(props: { create: boolean }) {
+  const { create } = props;
   const { userId } = useParams();
-  const dispatch = useDispatch();
-  const { create, employees, setEmployees } = props;
   const nav = useNavigate();
+  const dispatch = useDispatch();
+  const employees = useSelector((state: State) => state.employees);
   const emptyEmployee: employee = {
     id: 0,
     name: "",
@@ -43,14 +43,22 @@ function Editor(props: {
   const [employee, setEmployee] = useState(emptyEmployee);
 
   useEffect(() => {
-    if (create) return;
-    const tempEmp = employees.find((e) => e.id.toString() === userId);
-    if (tempEmp) return setEmployee(tempEmp);
-    dispatch(
-      openSnackbarError("Employee not found, redirected to create page.")
-    );
-    nav("/create", { replace: true });
-  }, [create, employees, dispatch, nav, userId]);
+    if (create) return setEmployee(emptyEmployee);
+    userId &&
+      getIdEmpBackend(+userId)
+        .then((response) => {
+          if (response.status === 200) return response.data;
+          throw new Error();
+        })
+        .then((result) => setEmployee(result))
+        .catch((_error) => {
+          dispatch(
+            openSnackbarError("Employee not found, redirected to create page.")
+          );
+          nav("/create", { replace: true });
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [create, dispatch, employees, nav, userId]);
 
   const BackButton = styled(Button)({
     textTransform: "none",
@@ -82,7 +90,7 @@ function Editor(props: {
           });
         })
         .then((result: employee) => {
-          setEmployees([...employees, result]);
+          dispatch(addEmployee(result));
           nav("/", { replace: true });
         })
         .catch((error) => console.log("error", error));
@@ -99,11 +107,7 @@ function Editor(props: {
           throw new Error("Error updating employee");
         })
         .then((result: employee) => {
-          setEmployees(
-            employees.map((emp) =>
-              emp.id.toString() === userId ? result : emp
-            )
-          );
+          dispatch(updateEmployee(result));
           nav("/", { replace: true });
         })
         .catch(

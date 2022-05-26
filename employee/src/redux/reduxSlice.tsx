@@ -6,6 +6,9 @@ export interface State {
   severity: string;
   message: string;
   employees: employee[];
+  page: number;
+  error: boolean;
+  loading: boolean;
 }
 
 const initialState: State = {
@@ -13,6 +16,9 @@ const initialState: State = {
   severity: "info",
   message: "",
   employees: [],
+  page: 0,
+  error: false,
+  loading: true,
 };
 
 const reduxSlice = createSlice({
@@ -26,6 +32,7 @@ const reduxSlice = createSlice({
         message: message.payload,
         severity: "error",
       };
+      return state;
     },
     openSnackbarSuccess(state: State, message: PayloadAction<string>) {
       state = {
@@ -34,6 +41,7 @@ const reduxSlice = createSlice({
         message: message.payload,
         severity: "success",
       };
+      return state;
     },
     openSnackbarInfo(state: State, message: PayloadAction<string>) {
       state = {
@@ -42,28 +50,48 @@ const reduxSlice = createSlice({
         message: message.payload,
         severity: "info",
       };
+      return state;
     },
     closeSnackbar(state) {
-      state.toggleSnackbar = false;
+      state = { ...state, toggleSnackbar: false };
+      return state;
     },
-    addEmployee(state: State, employee: PayloadAction<employee>) {
-      state.employees = [...state.employees, employee.payload];
+    addEmployee(state: State, action: PayloadAction<employee>) {
+      state = { ...state, employees: [...state.employees, action.payload] };
+      return state;
     },
-    deleteEmployee(state: State, id: PayloadAction<number>) {
-      state.employees = [
-        ...state.employees.filter((emp) => emp.id !== id.payload),
-      ];
+    deleteEmployee(state: State, action: PayloadAction<number>) {
+      state = {
+        ...state,
+        employees: state.employees.filter((emp) => emp.id !== action.payload),
+      };
+      return state;
     },
-    updateEmployee(state: State, employee: PayloadAction<employee>) {
-      const id: number = employee.payload.id;
-      state.employees = [
-        ...state.employees.map((emp) =>
-          emp.id === id ? employee.payload : emp
+    updateEmployee(state: State, action: PayloadAction<employee>) {
+      const id: number = action.payload.id;
+      state = {
+        ...state,
+        employees: state.employees.map((emp) =>
+          emp.id === id ? action.payload : emp
         ),
-      ];
+      };
+      return state;
     },
-    setEmployees(state: State, employees: PayloadAction<employee[]>) {
-      state.employees = [...employees.payload];
+    setEmployees(state: State, action: PayloadAction<employee[]>) {
+      state = { ...state, employees: action.payload, error: false };
+      return state;
+    },
+    setPage(state: State, action: PayloadAction<number>) {
+      state = { ...state, page: action.payload };
+      return state;
+    },
+    errorPage(state: State) {
+      state = { ...state, error: true };
+      return state;
+    },
+    setLoading(state: State, action: PayloadAction<boolean>) {
+      state = { ...state, loading: action.payload };
+      return state;
     },
   },
 });
@@ -77,5 +105,8 @@ export const {
   deleteEmployee,
   updateEmployee,
   setEmployees,
+  setPage,
+  errorPage,
+  setLoading,
 } = reduxSlice.actions;
 export default reduxSlice.reducer;

@@ -4,14 +4,19 @@ import {
   Typography as Text,
   Button,
   IconButton,
-  Link,
+  LinearProgress,
 } from "@mui/material";
 
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import { styled } from "@mui/material/styles";
-import { Link as RouterLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { State } from "./redux/reduxSlice";
 
-function Navbar(props: { error: boolean }) {
+function Navbar() {
+  const error = useSelector((state: State) => state.error);
+  const loading = useSelector((state: State) => state.loading);
+  const nav = useNavigate();
   const AddEmpButton = styled(Button)({
     textTransform: "none",
     backgroundColor: "#34933B",
@@ -31,22 +36,20 @@ function Navbar(props: { error: boolean }) {
         >
           Employees
         </Text>
-        {props.error || (
+        {error || (
           <>
-            <Link to="/create" component={RouterLink} underline="none">
-              <AddEmpButton
-                startIcon={<AddCircleOutlinedIcon />}
-                color="success"
-                variant="contained"
-                sx={{ display: { sm: "flex", xs: "none" } }}
-              >
-                Add Employee
-              </AddEmpButton>
-            </Link>
+            <AddEmpButton
+              startIcon={<AddCircleOutlinedIcon />}
+              color="success"
+              variant="contained"
+              sx={{ display: { sm: "flex", xs: "none" } }}
+              onClick={() => nav("/create", { replace: true })}
+            >
+              Add Employee
+            </AddEmpButton>
             <IconButton
               sx={{ display: { sm: "none", xs: "flex" }, width: "2rem" }}
-              component={RouterLink}
-              to="/create"
+              onClick={() => nav("/create", { replace: true })}
             >
               <AddCircleOutlinedIcon
                 sx={{ minWidth: "30px", minHeight: "30px", color: "white" }}
@@ -55,6 +58,7 @@ function Navbar(props: { error: boolean }) {
           </>
         )}
       </Toolbar>
+      {loading && <LinearProgress />}
     </AppBar>
   );
 }

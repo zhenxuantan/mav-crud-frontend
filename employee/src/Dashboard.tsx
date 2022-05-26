@@ -1,25 +1,29 @@
 import { Grid, Typography as Text, Button } from "@mui/material";
-import { useState } from "react";
 import EmployeeCard, { employee } from "./EmployeeCard";
 import { deleteEmpBackend } from "./Backend";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Footer from "./Footer";
 import { useNavigate } from "react-router";
-import { openSnackbarError, openSnackbarSuccess } from "./redux/reduxSlice";
+import {
+  deleteEmployee,
+  openSnackbarError,
+  openSnackbarSuccess,
+  setPage,
+  State,
+} from "./redux/reduxSlice";
 
-function Dashboard(props: {
-  employees: employee[];
-  setEmployees: Function;
-  error: boolean;
-}) {
+function Dashboard() {
   const nav = useNavigate();
-  const { employees, setEmployees, error } = props;
-  const [page, setPage] = useState(0);
+  const employees = useSelector((state: State) => state.employees);
+  const error = useSelector((state: State) => state.error);
+  const page = useSelector((state: State) => state.page);
   const dispatch = useDispatch();
 
   const deleteEmp = (id: number) => {
-    setPage(
-      Math.max(Math.min(Math.ceil((employees.length - 1) / 10) - 1, page), 0)
+    dispatch(
+      setPage(
+        Math.max(Math.min(Math.ceil((employees.length - 1) / 10) - 1, page), 0)
+      )
     );
     deleteEmpBackend(id)
       .then((response) => {
@@ -33,7 +37,7 @@ function Dashboard(props: {
         throw new Error();
       })
       .catch((_error) => dispatch(openSnackbarError("Server error")));
-    setEmployees(employees.filter((emp) => emp.id !== id));
+    dispatch(deleteEmployee(id));
   };
 
   return (
@@ -64,7 +68,7 @@ function Dashboard(props: {
           {employees.slice(page * 10, page * 10 + 10).map((emp: employee) => (
             <EmployeeCard emp={emp} deleteEmp={deleteEmp} key={emp.id} />
           ))}
-          <Footer page={page} setPage={setPage} employees={employees} />
+          <Footer employees={employees} />
         </>
       )}
     </Grid>

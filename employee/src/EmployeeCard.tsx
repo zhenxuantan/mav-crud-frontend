@@ -39,6 +39,9 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
   const RedButton = styled(IconButton)({
     color: "#E50000",
   });
+  const PlainButton = styled(Button)({
+    textTransform: "none",
+  });
   const GreyCard = styled(Card)({
     backgroundColor: "#EAEAEA",
     width: "100%",
@@ -144,8 +147,10 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
                   </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
-                  <Button
+                  <PlainButton onClick={() => setDeleteDialog(false)}>
+                    Cancel
+                  </PlainButton>
+                  <PlainButton
                     onClick={() => {
                       setDeleteDialog(false);
                       deleteEmp(emp.id);
@@ -153,7 +158,7 @@ function EmployeeCard(props: { emp: employee; deleteEmp: Function }) {
                     autoFocus
                   >
                     Erase
-                  </Button>
+                  </PlainButton>
                 </DialogActions>
               </Dialog>
             </Grid>

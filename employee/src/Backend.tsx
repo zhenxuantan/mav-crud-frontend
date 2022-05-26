@@ -5,6 +5,8 @@ const backEndSite = "http://localhost:3001/employee/";
 
 export const getAllEmpBackend = () => axios.get(backEndSite);
 
+export const getIdEmpBackend = (id: number) => axios.get(backEndSite + id);
+
 export const deleteEmpBackend = (id: number) => axios.delete(backEndSite + id);
 
 export const updateEmpBackend = (emp: employee) => {

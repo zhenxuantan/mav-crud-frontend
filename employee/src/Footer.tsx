@@ -1,13 +1,14 @@
 import { Typography as Text, Grid, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { employee } from "./EmployeeCard";
+import { setPage, State } from "./redux/reduxSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-function Footer(props: {
-  page: number;
-  setPage: Function;
-  employees: employee[];
-}) {
-  const { page, setPage, employees } = props;
+function Footer(props: { employees: employee[] }) {
+  const { employees } = props;
+  const dispatch = useDispatch();
+  const page = useSelector((state: State) => state.page);
+  const loading = useSelector((state: State) => state.loading);
 
   const PageButton = styled(Button)({
     textTransform: "none",
@@ -44,14 +45,16 @@ function Footer(props: {
           </Text>
         </Grid>
       ) : (
-        <Grid item>
-          <Text variant="h5" color="primary" align="center">
-            <b>
-              There are currently no employees. You can add them via the button
-              at the top of the page.
-            </b>
-          </Text>
-        </Grid>
+        loading || (
+          <Grid item>
+            <Text variant="h5" color="primary" align="center">
+              <b>
+                There are currently no employees. You can add them via the
+                button at the top of the page.
+              </b>
+            </Text>
+          </Grid>
+        )
       )}
       {employees.length > 10 && (
         <Grid
@@ -66,7 +69,7 @@ function Footer(props: {
             <PageButton
               color="primary"
               disabled={page === 0}
-              onClick={() => setPage(page - 1)}
+              onClick={() => dispatch(setPage(page - 1))}
             >
               Previous
             </PageButton>
@@ -80,7 +83,7 @@ function Footer(props: {
             <PageButton
               color="primary"
               disabled={page === Math.ceil(employees.length / 10) - 1}
-              onClick={() => setPage(page + 1)}
+              onClick={() => dispatch(setPage(page + 1))}
             >
               Next
             </PageButton>
