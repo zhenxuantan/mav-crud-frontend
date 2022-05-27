@@ -1,4 +1,4 @@
-import { DEPARTMENT, employee } from "./EmployeeCard";
+import { DEPARTMENT, employee } from "../parts/EmployeeCard";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
@@ -16,7 +16,11 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
-import { createEmpBackend, getIdEmpBackend, updateEmpBackend } from "./Backend";
+import {
+  createEmpBackend,
+  getIdEmpBackend,
+  updateEmpBackend,
+} from "../utils/backend";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addEmployee,
@@ -25,7 +29,7 @@ import {
   openSnackbarSuccess,
   State,
   updateEmployee,
-} from "./redux/reduxSlice";
+} from "../utils/reduxSlice";
 
 function Editor(props: { create: boolean }) {
   const { create } = props;

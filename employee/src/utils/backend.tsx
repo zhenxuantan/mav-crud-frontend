@@ -1,4 +1,4 @@
-import { employee } from "./EmployeeCard";
+import { employee } from "../parts/EmployeeCard";
 import axios from "axios";
 
 const backEndSite = "http://localhost:3001/employee/";

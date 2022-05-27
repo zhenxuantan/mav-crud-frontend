@@ -1,8 +1,8 @@
 import { Grid, Typography as Text, Button } from "@mui/material";
-import EmployeeCard, { employee } from "./EmployeeCard";
-import { deleteEmpBackend } from "./Backend";
+import EmployeeCard, { employee } from "../parts/EmployeeCard";
+import { deleteEmpBackend } from "../utils/backend";
 import { useDispatch, useSelector } from "react-redux";
-import Footer from "./Footer";
+import Footer from "../parts/Footer";
 import { useNavigate } from "react-router";
 import {
   deleteEmployee,
@@ -10,14 +10,14 @@ import {
   openSnackbarSuccess,
   setPage,
   State,
-} from "./redux/reduxSlice";
+} from "../utils/reduxSlice";
 
 function Dashboard() {
   const nav = useNavigate();
+  const dispatch = useDispatch();
   const employees = useSelector((state: State) => state.employees);
   const error = useSelector((state: State) => state.error);
   const page = useSelector((state: State) => state.page);
-  const dispatch = useDispatch();
 
   const deleteEmp = (id: number) => {
     dispatch(
@@ -68,7 +68,7 @@ function Dashboard() {
           {employees.slice(page * 10, page * 10 + 10).map((emp: employee) => (
             <EmployeeCard emp={emp} deleteEmp={deleteEmp} key={emp.id} />
           ))}
-          <Footer employees={employees} />
+          <Footer />
         </>
       )}
     </Grid>

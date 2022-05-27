@@ -1,7 +1,7 @@
 import { Snackbar, AlertColor } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { closeSnackbar } from "./redux/reduxSlice";
-import { State } from "./redux/reduxSlice";
+import { closeSnackbar } from "../utils/reduxSlice";
+import { State } from "../utils/reduxSlice";
 import MuiAlert from "@mui/material/Alert";
 
 function SnackBar() {

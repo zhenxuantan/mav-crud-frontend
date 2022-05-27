@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { employee } from "../EmployeeCard";
+import { employee } from "../parts/EmployeeCard";
 
 export interface State {
   toggleSnackbar: boolean;

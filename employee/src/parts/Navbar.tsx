@@ -11,7 +11,7 @@ import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { State } from "./redux/reduxSlice";
+import { State } from "../utils/reduxSlice";
 
 function Navbar() {
   const error = useSelector((state: State) => state.error);

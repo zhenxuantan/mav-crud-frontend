@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { configureStore } from "@reduxjs/toolkit";
-import reduxSlice from "./redux/reduxSlice";
+import reduxSlice from "./utils/reduxSlice";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 

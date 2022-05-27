@@ -1,20 +1,20 @@
 import { CssBaseline, Container } from "@mui/material";
 import { useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Dashboard from "./Dashboard";
-import Navbar from "./Navbar";
-import Editor from "./Editor";
+import Dashboard from "./pages/Dashboard";
+import Navbar from "./parts/Navbar";
+import Editor from "./pages/Editor";
 import { Route, Routes } from "react-router";
-import { getAllEmpBackend } from "./Backend";
-import ErrorPage from "./ErrorPage";
-import SnackBar from "./Snackbar";
+import { getAllEmpBackend } from "./utils/backend";
+import ErrorPage from "./pages/ErrorPage";
+import SnackBar from "./parts/Snackbar";
 import { useDispatch } from "react-redux";
 import {
   errorPage,
   openSnackbarError,
   setEmployees,
   setLoading,
-} from "./redux/reduxSlice";
+} from "./utils/reduxSlice";
 
 function App() {
   const dispatch = useDispatch();
