@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Dashboard from "./pages/Dashboard";
 import Navbar from "./parts/Navbar";
 import Editor from "./pages/Editor";
+import Register from "./pages/Register";
 import { Route, Routes } from "react-router";
 import { getAllEmpBackend } from "./utils/backend";
 import ErrorPage from "./pages/ErrorPage";
@@ -59,6 +60,7 @@ function App() {
                 path="/update/:userId"
                 element={<Editor create={false} />}
               />
+              <Route path="/register" element={<Register />} />
               <Route path="*" element={<ErrorPage />} />
             </Routes>
           </Container>

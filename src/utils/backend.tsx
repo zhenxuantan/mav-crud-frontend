@@ -18,3 +18,13 @@ export const createEmpBackend = (emp: employee) => {
   const { id, ...rest } = emp;
   return axios.post(backEndSite, rest);
 };
+
+export const getUserBackend = (username: string) =>
+  axios.get(backEndSite + username);
+
+export const createUserBackend = (user: {
+  username: string;
+  password: string;
+}) => {
+  return axios.post(backEndSite, user);
+};
