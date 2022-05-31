@@ -4,6 +4,9 @@ import axios from "axios";
 const empSite = "http://localhost:3001/employee/";
 const authSite = "http://localhost:3001/auth/";
 
+axios.defaults.headers.common["x-access-token"] =
+  window.localStorage.getItem("token") || "";
+
 export const getAllEmpBackend = () => axios.get(empSite);
 
 export const getIdEmpBackend = (id: number) => axios.get(empSite + id);
@@ -35,5 +38,5 @@ export const loginUserBackend = (user: {
   username: string;
   password: string;
 }) => {
-  return axios.post(authSite + user.username, user);
+  return axios.post(authSite + "login", user);
 };
