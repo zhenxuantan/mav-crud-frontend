@@ -19,11 +19,11 @@ function Login() {
   function login() {
     return loginUserBackend({ username: username, password: password })
       .then((response) => {
-        if (response.status === 200)
-          return dispatch(openSnackbarSuccess("Successfully logged in."));
+        window.localStorage.setItem("token", response.data.token);
+
+        dispatch(openSnackbarSuccess("Successfully logged in."));
       })
       .catch((err) => {
-        console.log(err);
         if (err.response.status === 403)
           return dispatch(openSnackbarError("Wrong password"));
         if (err.response.status === 404)
