@@ -8,14 +8,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import PasswordInput from "../parts/PasswordInput";
-import PasswordStrengthBar from "react-password-strength-bar";
+import { createUserBackend, getUserBackend } from "../utils/backend";
+import { openSnackbarError, openSnackbarSuccess } from "../utils/reduxSlice";
+import { useDispatch } from "react-redux";
+import DepartmentSelect from "../parts/DepartmentSelect";
+import { DEPARTMENT } from "../parts/EmployeeCard";
 
 function Register() {
   const nav = useNavigate();
+  const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
-  const [score, setScore] = useState(0);
+  const [department, setDepartment] = useState(DEPARTMENT.HR);
 
   function usernameError() {
     return !username.match("^[a-zA-Z0-9]*$") || username.length > 30;
@@ -25,17 +30,46 @@ function Register() {
     return (
       password !== confirmPw ||
       usernameError() ||
-      score < 2 ||
+      password.length < 8 ||
       username.length < 4
     );
   }
 
   function errorMessage() {
     var msg = [];
-    if (score < 2) msg.push("Password too weak.");
+    if (password.length < 8) msg.push("Password too weak.");
     if (password !== confirmPw) msg.push("Entered passwords are not the same.");
     if (usernameError() || username.length < 4) msg.push("Username error.");
     return msg.join(" ");
+  }
+
+  function register() {
+    if (registerError()) return;
+    console.log(username);
+    return getUserBackend(username)
+      .then((response) => {
+        if (response.status === 200)
+          dispatch(openSnackbarError("Username used! Try another one."));
+      })
+      .catch((err) => {
+        console.log(err.response.status);
+        if (err.response.status === 404) {
+          return createUserBackend({
+            username: username,
+            password: password,
+            department: department,
+          }).then((response) => {
+            if (response.status === 200) {
+              dispatch(openSnackbarSuccess("Successfully registered!"));
+              return nav("/", { replace: true });
+            }
+            response.data.then((val: { errorMessage: string | undefined }) => {
+              throw new Error(val.errorMessage);
+            });
+          });
+        }
+        dispatch(openSnackbarError("Server error. Please try again."));
+      });
   }
 
   return (
@@ -69,10 +103,6 @@ function Register() {
           setPassword={setPassword}
           label="Password"
         />
-        <PasswordStrengthBar
-          password={password}
-          onChangeScore={(s, f) => setScore(s)}
-        />
       </Grid>
       <Grid item>
         <PasswordInput
@@ -81,13 +111,16 @@ function Register() {
           label="Confirm Password"
         />
       </Grid>
+      <Grid item xs={12}>
+        <DepartmentSelect state={department} setState={setDepartment} />
+      </Grid>
       <Grid item>
         <Tooltip title={errorMessage()}>
           <Button
             variant="contained"
             color={registerError() ? "error" : "primary"}
             sx={{ maxWidth: "20rem", width: "100vw" }}
-            onClick={() => registerError() || nav("/", { replace: true })}
+            onClick={register}
           >
             Register
           </Button>

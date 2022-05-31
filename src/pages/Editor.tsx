@@ -4,12 +4,8 @@ import { useEffect, useState } from "react";
 import {
   Button,
   ButtonGroup,
-  FormControl,
   Grid,
   InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
   styled,
   TextField,
   Typography as Text,
@@ -30,6 +26,7 @@ import {
   State,
   updateEmployee,
 } from "../utils/reduxSlice";
+import DepartmentSelect from "../parts/DepartmentSelect";
 
 function Editor(props: { create: boolean }) {
   const { create } = props;
@@ -172,25 +169,7 @@ function Editor(props: { create: boolean }) {
         />
       </Grid>
       <Grid item xs={12} sm={2} mb="auto">
-        <FormControl variant="standard" fullWidth>
-          <InputLabel>Department</InputLabel>
-          <Select
-            fullWidth
-            variant="standard"
-            label="Department"
-            value={employee.department}
-            onChange={(event) =>
-              setEmployee({
-                ...employee,
-                department: event.target.value as DEPARTMENT,
-              })
-            }
-            sx={{ textAlign: "left" }}
-          >
-            <MenuItem value={DEPARTMENT.HR}>{DEPARTMENT.HR}</MenuItem>
-            <MenuItem value={DEPARTMENT.PS}>{DEPARTMENT.PS}</MenuItem>
-          </Select>
-        </FormControl>
+        <DepartmentSelect state={employee} setState={setEmployee} />
       </Grid>
       <Grid item container xs={12} justifyContent="flex-end" spacing={2}>
         <Grid item>

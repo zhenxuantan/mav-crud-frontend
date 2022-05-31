@@ -1,13 +1,9 @@
 import { CssBaseline, Container } from "@mui/material";
 import { useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Dashboard from "./pages/Dashboard";
-import Navbar from "./parts/Navbar";
-import Editor from "./pages/Editor";
-import Register from "./pages/Register";
+import * as PAGES from "./pages";
 import { Route, Routes } from "react-router";
 import { getAllEmpBackend } from "./utils/backend";
-import ErrorPage from "./pages/ErrorPage";
 import SnackBar from "./parts/Snackbar";
 import { useDispatch } from "react-redux";
 import {
@@ -16,6 +12,7 @@ import {
   setEmployees,
   setLoading,
 } from "./utils/reduxSlice";
+import Navbar from "./parts/Navbar";
 
 function App() {
   const dispatch = useDispatch();
@@ -54,14 +51,15 @@ function App() {
         <div>
           <Container maxWidth="lg">
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/create" element={<Editor create={true} />} />
+              <Route path="/" element={<PAGES.Dashboard />} />
+              <Route path="/create" element={<PAGES.Editor create={true} />} />
               <Route
                 path="/update/:userId"
-                element={<Editor create={false} />}
+                element={<PAGES.Editor create={false} />}
               />
-              <Route path="/register" element={<Register />} />
-              <Route path="*" element={<ErrorPage />} />
+              <Route path="/register" element={<PAGES.Register />} />
+              <Route path="/login" element={<PAGES.Login />} />
+              <Route path="*" element={<PAGES.ErrorPage />} />
             </Routes>
           </Container>
         </div>

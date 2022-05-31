@@ -1,30 +1,39 @@
-import { employee } from "../parts/EmployeeCard";
+import { DEPARTMENT, employee } from "../parts/EmployeeCard";
 import axios from "axios";
 
-const backEndSite = "http://localhost:3001/employee/";
+const empSite = "http://localhost:3001/employee/";
+const authSite = "http://localhost:3001/auth/";
 
-export const getAllEmpBackend = () => axios.get(backEndSite);
+export const getAllEmpBackend = () => axios.get(empSite);
 
-export const getIdEmpBackend = (id: number) => axios.get(backEndSite + id);
+export const getIdEmpBackend = (id: number) => axios.get(empSite + id);
 
-export const deleteEmpBackend = (id: number) => axios.delete(backEndSite + id);
+export const deleteEmpBackend = (id: number) => axios.delete(empSite + id);
 
 export const updateEmpBackend = (emp: employee) => {
   const { id, ...rest } = emp;
-  return axios.patch(backEndSite + id, rest);
+  return axios.patch(empSite + id, rest);
 };
 
 export const createEmpBackend = (emp: employee) => {
   const { id, ...rest } = emp;
-  return axios.post(backEndSite, rest);
+  return axios.post(empSite, rest);
 };
 
 export const getUserBackend = (username: string) =>
-  axios.get(backEndSite + username);
+  axios.get(authSite + username);
 
 export const createUserBackend = (user: {
   username: string;
   password: string;
+  department: DEPARTMENT;
 }) => {
-  return axios.post(backEndSite, user);
+  return axios.post(authSite, user);
+};
+
+export const loginUserBackend = (user: {
+  username: string;
+  password: string;
+}) => {
+  return axios.post(authSite + user.username, user);
 };
