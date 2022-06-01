@@ -6,9 +6,13 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PasswordInput from "../parts/PasswordInput";
-import { createUserBackend, getUserBackend } from "../utils/backend";
+import {
+  createUserBackend,
+  getUserBackend,
+  checkTokenBackend,
+} from "../utils/backend";
 import { openSnackbarError, openSnackbarSuccess } from "../utils/reduxSlice";
 import { useDispatch } from "react-redux";
 import DepartmentSelect from "../parts/DepartmentSelect";
@@ -21,6 +25,16 @@ function Register() {
   const [password, setPassword] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [department, setDepartment] = useState(DEPARTMENT.HR);
+
+  useEffect(
+    () => {
+      checkTokenBackend()
+        .then((_response) => nav("/", { replace: true }))
+        .catch((_error) => null);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   function usernameError() {
     return !username.match("^[a-zA-Z0-9]*$") || username.length > 30;
@@ -111,20 +125,39 @@ function Register() {
           label="Confirm Password"
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item>
         <DepartmentSelect state={department} setState={setDepartment} />
       </Grid>
-      <Grid item>
-        <Tooltip title={errorMessage()}>
+      <Grid
+        container
+        item
+        direction="row"
+        sx={{ maxWidth: "20rem", width: "100vw" }}
+        justifyContent="center"
+        spacing={2}
+      >
+        <Grid item>
           <Button
             variant="contained"
-            color={registerError() ? "error" : "primary"}
-            sx={{ maxWidth: "20rem", width: "100vw" }}
-            onClick={register}
+            color={"primary"}
+            sx={{ maxWidth: "8rem", width: "100vw" }}
+            onClick={() => nav("/login", { replace: true })}
           >
-            Register
+            To Login
           </Button>
-        </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip title={errorMessage()}>
+            <Button
+              variant="contained"
+              color={registerError() ? "error" : "primary"}
+              sx={{ maxWidth: "8rem", width: "100vw" }}
+              onClick={register}
+            >
+              Register
+            </Button>
+          </Tooltip>
+        </Grid>
       </Grid>
     </Grid>
   );

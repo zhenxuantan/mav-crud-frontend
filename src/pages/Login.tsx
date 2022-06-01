@@ -1,16 +1,26 @@
 import { Grid, Button, TextField, Typography as Text } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PasswordInput from "../parts/PasswordInput";
-import { loginUserBackend } from "../utils/backend";
+import { checkTokenBackend, loginUserBackend } from "../utils/backend";
 import { openSnackbarError, openSnackbarSuccess } from "../utils/reduxSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-  //   const nav = useNavigate();
+  const nav = useNavigate();
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(
+    () => {
+      checkTokenBackend()
+        .then((_response) => nav("/", { replace: true }))
+        .catch((_error) => null);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   function usernameError() {
     return !username.match("^[a-zA-Z0-9]*$") || username.length > 30;
@@ -20,8 +30,8 @@ function Login() {
     return loginUserBackend({ username: username, password: password })
       .then((response) => {
         window.localStorage.setItem("token", response.data.token);
-
         dispatch(openSnackbarSuccess("Successfully logged in."));
+        nav("/", { replace: true });
       })
       .catch((err) => {
         if (err.response.status === 403)
@@ -63,15 +73,34 @@ function Login() {
           label="Password"
         />
       </Grid>
-      <Grid item>
-        <Button
-          variant="contained"
-          color={"primary"}
-          sx={{ maxWidth: "20rem", width: "100vw" }}
-          onClick={login}
-        >
-          Login
-        </Button>
+      <Grid
+        container
+        item
+        direction="row"
+        sx={{ maxWidth: "20rem", width: "100vw" }}
+        justifyContent="center"
+        spacing={2}
+      >
+        <Grid item>
+          <Button
+            variant="contained"
+            color={"primary"}
+            sx={{ maxWidth: "8rem", width: "100vw" }}
+            onClick={() => nav("/register", { replace: true })}
+          >
+            To Register
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button
+            variant="contained"
+            color={"primary"}
+            sx={{ maxWidth: "8rem", width: "100vw" }}
+            onClick={login}
+          >
+            Login
+          </Button>
+        </Grid>
       </Grid>
     </Grid>
   );

@@ -7,7 +7,7 @@ function DepartmentSelect(props: {
 }) {
   const { state, setState } = props;
   return (
-    <FormControl variant="standard" fullWidth>
+    <FormControl variant="standard" sx={{ maxWidth: "20rem", width: "100vw" }}>
       <InputLabel>Department</InputLabel>
       <Select
         fullWidth

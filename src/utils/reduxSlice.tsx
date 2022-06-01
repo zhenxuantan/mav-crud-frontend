@@ -7,7 +7,6 @@ export interface State {
   message: string;
   employees: employee[];
   page: number;
-  error: boolean;
   loading: boolean;
 }
 
@@ -17,8 +16,7 @@ const initialState: State = {
   message: "",
   employees: [],
   page: 0,
-  error: false,
-  loading: true,
+  loading: false,
 };
 
 const reduxSlice = createSlice({
@@ -78,15 +76,11 @@ const reduxSlice = createSlice({
       return state;
     },
     setEmployees(state: State, action: PayloadAction<employee[]>) {
-      state = { ...state, employees: action.payload, error: false };
+      state = { ...state, employees: action.payload };
       return state;
     },
     setPage(state: State, action: PayloadAction<number>) {
       state = { ...state, page: action.payload };
-      return state;
-    },
-    errorPage(state: State) {
-      state = { ...state, error: true };
       return state;
     },
     setLoading(state: State, action: PayloadAction<boolean>) {
@@ -106,7 +100,6 @@ export const {
   updateEmployee,
   setEmployees,
   setPage,
-  errorPage,
   setLoading,
 } = reduxSlice.actions;
 export default reduxSlice.reducer;

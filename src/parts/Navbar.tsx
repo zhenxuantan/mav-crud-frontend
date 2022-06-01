@@ -9,19 +9,28 @@ import {
 
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import { styled } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { State } from "../utils/reduxSlice";
+import { useLayoutEffect, useState } from "react";
 
 function Navbar() {
-  const error = useSelector((state: State) => state.error);
   const loading = useSelector((state: State) => state.loading);
+  const [createButton, setCreateButton] = useState(false);
   const nav = useNavigate();
+  const loc = useLocation();
   const AddEmpButton = styled(Button)({
     textTransform: "none",
     backgroundColor: "#34933B",
     borderRadius: 0,
   });
+  useLayoutEffect(() => {
+    setCreateButton(
+      loc.pathname === "/" ||
+        loc.pathname.startsWith("/update/") ||
+        loc.pathname === "/create"
+    );
+  }, [loc]);
 
   return (
     <AppBar position="sticky" color="primary" elevation={0}>
@@ -36,7 +45,7 @@ function Navbar() {
         >
           Employees
         </Text>
-        {error || (
+        {createButton && (
           <>
             <AddEmpButton
               startIcon={<AddCircleOutlinedIcon />}

@@ -36,13 +36,19 @@ function Footer() {
             alignItems="left"
             mr="auto"
           >
-            <Text variant="body1" align="left" color="primary">
-              Showing{" "}
-              <b>
-                {page * 10 + 1}-{Math.min(page * 10 + 10, employees.length)}
-              </b>{" "}
-              out of <b>{employees.length}</b> entries
-            </Text>
+            {employees.length > 1 ? (
+              <Text variant="body1" align="left" color="primary">
+                Showing{" "}
+                <b>
+                  {page * 10 + 1}-{Math.min(page * 10 + 10, employees.length)}
+                </b>{" "}
+                out of <b>{employees.length}</b> entries
+              </Text>
+            ) : (
+              <Text variant="body1" align="left" color="primary">
+                Showing the only entry
+              </Text>
+            )}
           </Grid>
         ) : (
           loading || (

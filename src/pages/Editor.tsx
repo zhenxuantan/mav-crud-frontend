@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Button,
-  ButtonGroup,
   Grid,
   InputAdornment,
   styled,
@@ -48,15 +47,23 @@ function Editor(props: { create: boolean }) {
     userId &&
       getIdEmpBackend(+userId)
         .then((response) => {
-          if (response.status === 200) return response.data;
-          throw new Error();
+          return response.data;
         })
         .then((result) => setEmployee(result))
-        .catch((_error) => {
-          dispatch(
-            openSnackbarError("Employee not found, redirected to create page.")
-          );
-          nav("/create", { replace: true });
+        .catch((error) => {
+          if (error.response.status === 403) {
+            nav("/login", { replace: true });
+            return dispatch(openSnackbarError("Need to login"));
+          } else if (error.response.status === 404) {
+            dispatch(
+              openSnackbarError(
+                "Employee not found, redirected to create page."
+              )
+            );
+            return nav("/create", { replace: true });
+          }
+          dispatch(openSnackbarError("Server error"));
+          nav("/", { replace: true });
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [create, dispatch, employees, nav, userId]);
@@ -94,51 +101,58 @@ function Editor(props: { create: boolean }) {
           dispatch(addEmployee(result));
           nav("/", { replace: true });
         })
-        .catch((error) => console.log("error", error));
+        .catch((error) => {
+          if (error.response.status === 403) {
+            nav("/login", { replace: true });
+            return dispatch(openSnackbarError("Need to login"));
+          }
+          dispatch(openSnackbarError("Server error"));
+          nav("/", { replace: true });
+        });
     } else {
       updateEmpBackend(employee)
         .then((response) => {
-          if (response.status === 200) {
-            dispatch(openSnackbarSuccess("Successfully updated employee"));
-            return response.data;
-          } else if (response.status === 304) {
-            dispatch(openSnackbarInfo("No change detected"));
-            throw new Error("");
-          }
-          throw new Error("Error updating employee");
+          dispatch(
+            response.status === 200
+              ? openSnackbarSuccess("Successfully updated employee")
+              : openSnackbarInfo("No change detected")
+          );
+          return response.data;
         })
         .then((result: employee) => {
           dispatch(updateEmployee(result));
           nav("/", { replace: true });
         })
-        .catch(
-          (error) =>
-            String(error) === "" && dispatch(openSnackbarError(String(error)))
-        );
+        .catch((error) => {
+          if (error.response.status === 403) {
+            nav("/login", { replace: true });
+            return dispatch(openSnackbarError("Need to login"));
+          }
+          dispatch(openSnackbarError("Server error"));
+          nav("/", { replace: true });
+        });
     }
   }
 
   return (
-    <Grid container mt={1} p={1} spacing={2} alignItems="center">
-      <Grid
-        item
-        container
-        direction="row"
-        wrap="nowrap"
-        alignItems="flex-start"
-        spacing={2}
-      >
-        <Grid item>
-          <Text variant="h5" color="primary">
-            <b>
-              {create ? "Enter new employee details" : "Edit employee details"}
-            </b>
-          </Text>
-        </Grid>
+    <Grid
+      container
+      direction="column"
+      alignContent="center"
+      alignItems="center"
+      spacing={2}
+      pt={2}
+    >
+      <Grid item>
+        <Text variant="h5" color="primary">
+          <b>
+            {create ? "Enter new employee details" : "Edit employee details"}
+          </b>
+        </Text>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid item>
         <TextField
-          fullWidth
+          sx={{ maxWidth: "20rem", width: "100vw" }}
           autoFocus
           variant="standard"
           label="Name (4 - 30 characters)"
@@ -151,9 +165,9 @@ function Editor(props: { create: boolean }) {
           }
         />
       </Grid>
-      <Grid item xs={12} sm={4} mb="auto">
+      <Grid item>
         <TextField
-          fullWidth
+          sx={{ maxWidth: "20rem", width: "100vw" }}
           variant="standard"
           label="Salary"
           type="number"
@@ -168,29 +182,37 @@ function Editor(props: { create: boolean }) {
           helperText={salaryError() && "Please enter a valid salary."}
         />
       </Grid>
-      <Grid item xs={12} sm={2} mb="auto">
+      <Grid item>
         <DepartmentSelect state={employee} setState={setEmployee} />
       </Grid>
-      <Grid item container xs={12} justifyContent="flex-end" spacing={2}>
+      <Grid
+        container
+        item
+        direction="row"
+        sx={{ maxWidth: "20rem", width: "100vw" }}
+        justifyContent="center"
+        spacing={2}
+      >
         <Grid item>
-          <ButtonGroup variant="contained">
-            <BackButton
-              endIcon={<ArrowBackIcon />}
-              color="primary"
-              variant="outlined"
-              onClick={() => nav("/", { replace: true })}
-            >
-              Back
-            </BackButton>
-            <BackButton
-              endIcon={<SaveIcon />}
-              color="primary"
-              onClick={handleSubmit}
-              disabled={nameError() || salaryError()}
-            >
-              Submit
-            </BackButton>
-          </ButtonGroup>
+          <BackButton
+            endIcon={<ArrowBackIcon />}
+            color="primary"
+            variant="outlined"
+            onClick={() => nav("/", { replace: true })}
+          >
+            Back
+          </BackButton>
+        </Grid>
+        <Grid item>
+          <BackButton
+            endIcon={<SaveIcon />}
+            color="primary"
+            variant="contained"
+            onClick={handleSubmit}
+            disabled={nameError() || salaryError()}
+          >
+            Submit
+          </BackButton>
         </Grid>
       </Grid>
     </Grid>

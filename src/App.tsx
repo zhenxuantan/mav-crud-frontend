@@ -1,38 +1,18 @@
 import { CssBaseline, Container } from "@mui/material";
-import { useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import * as PAGES from "./pages";
-import { Route, Routes } from "react-router";
-import { getAllEmpBackend } from "./utils/backend";
+import { Route, Routes, useLocation, useNavigate } from "react-router";
 import SnackBar from "./parts/Snackbar";
-import { useDispatch } from "react-redux";
-import {
-  errorPage,
-  openSnackbarError,
-  setEmployees,
-  setLoading,
-} from "./utils/reduxSlice";
 import Navbar from "./parts/Navbar";
+import { useLayoutEffect } from "react";
+import { checkTokenBackend } from "./utils/backend";
+import { useDispatch } from "react-redux";
+import { openSnackbarError } from "./utils/reduxSlice";
 
 function App() {
+  const loc = useLocation();
   const dispatch = useDispatch();
-  useEffect(() => {
-    getAllEmpBackend()
-      .then((response) => {
-        if (response.status === 200) return response.data;
-        throw new Error();
-      })
-      .then((result) => {
-        dispatch(setEmployees(result.employees));
-      })
-      .catch((_error) => {
-        dispatch(errorPage());
-        dispatch(openSnackbarError("Server error."));
-      })
-      .finally(() => dispatch(setLoading(false)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  const nav = useNavigate();
   const theme = createTheme({
     typography: { fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif` },
     palette: {
@@ -41,6 +21,17 @@ function App() {
       },
     },
   });
+
+  useLayoutEffect(() => {
+    const auth = loc.pathname === "/login" || loc.pathname === "/register";
+    checkTokenBackend()
+      .then((_response) => auth && nav("/", { replace: true }))
+      .catch((_error) => {
+        !auth && nav("/login", { replace: true });
+        !auth && dispatch(openSnackbarError("Need log in"));
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loc]);
 
   return (
     <>

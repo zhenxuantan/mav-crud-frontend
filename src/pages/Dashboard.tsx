@@ -1,6 +1,6 @@
 import { Grid, Typography as Text, Button } from "@mui/material";
 import EmployeeCard, { employee } from "../parts/EmployeeCard";
-import { deleteEmpBackend } from "../utils/backend";
+import { deleteEmpBackend, getAllEmpBackend } from "../utils/backend";
 import { useDispatch, useSelector } from "react-redux";
 import Footer from "../parts/Footer";
 import { useNavigate } from "react-router";
@@ -8,16 +8,44 @@ import {
   deleteEmployee,
   openSnackbarError,
   openSnackbarSuccess,
+  setEmployees,
+  setLoading,
   setPage,
   State,
 } from "../utils/reduxSlice";
+import { useEffect, useState } from "react";
 
 function Dashboard() {
   const nav = useNavigate();
   const dispatch = useDispatch();
+  const [error, setError] = useState(false);
   const employees = useSelector((state: State) => state.employees);
-  const error = useSelector((state: State) => state.error);
   const page = useSelector((state: State) => state.page);
+
+  const init = () => {
+    dispatch(setLoading(true));
+    getAllEmpBackend()
+      .then((response) => {
+        if (response.status === 200) return response.data;
+        throw new Error();
+      })
+      .then((result) => {
+        setError(false);
+        dispatch(setEmployees(result.employees));
+      })
+      .catch((error) => {
+        if (error.response.status === 403) {
+          nav("/login", { replace: true });
+          return dispatch(openSnackbarError("Need to login"));
+        }
+        setError(true);
+        dispatch(openSnackbarError("Server error."));
+      })
+      .finally(() => dispatch(setLoading(false)));
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(init, []);
 
   const deleteEmp = (id: number) => {
     dispatch(
@@ -27,16 +55,19 @@ function Dashboard() {
     );
     deleteEmpBackend(id)
       .then((response) => {
-        if (response.status === 204) {
-          dispatch(openSnackbarSuccess("Employee deleted"));
-          return response.data;
-        } else if (response.status === 404) {
+        dispatch(openSnackbarSuccess("Employee deleted"));
+        return response.data;
+      })
+      .catch((error) => {
+        if (error.response.status === 403) {
+          nav("/login", { replace: true });
+          return dispatch(openSnackbarError("Need to login"));
+        } else if (error.response.status === 404) {
           dispatch(openSnackbarError("Employee not found"));
           return "";
         }
-        throw new Error();
-      })
-      .catch((_error) => dispatch(openSnackbarError("Server error")));
+        dispatch(openSnackbarError("Server error"));
+      });
     dispatch(deleteEmployee(id));
   };
 
@@ -58,7 +89,7 @@ function Dashboard() {
             </Text>
           </Grid>
           <Grid item>
-            <Button variant="contained" onClick={() => nav(0)}>
+            <Button variant="contained" onClick={init}>
               Reload
             </Button>
           </Grid>
