@@ -42,14 +42,15 @@ function App() {
         <div>
           <Container maxWidth="lg">
             <Routes>
+              <Route path="/login" element={<PAGES.Login />} />
+              <Route path="/register" element={<PAGES.Register />} />
               <Route path="/" element={<PAGES.Dashboard />} />
               <Route path="/create" element={<PAGES.Editor create={true} />} />
               <Route
                 path="/update/:userId"
                 element={<PAGES.Editor create={false} />}
               />
-              <Route path="/register" element={<PAGES.Register />} />
-              <Route path="/login" element={<PAGES.Login />} />
+
               <Route path="*" element={<PAGES.ErrorPage />} />
             </Routes>
           </Container>

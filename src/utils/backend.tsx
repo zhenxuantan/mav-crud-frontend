@@ -5,13 +5,12 @@ const empSite = "http://localhost:3001/employee/";
 const authSite = "http://localhost:3001/auth/";
 
 const AXIOS = () => {
-  axios.defaults.headers.common["x-access-token"] =
-    window.localStorage.getItem("token") || "";
+  axios.defaults.withCredentials = true;
   return axios;
 };
 
 export const getAllEmpBackend = () => AXIOS().get(empSite);
-export const getIdEmpBackend = (id: number) => AXIOS().get(empSite + id);
+export const getEmpBackend = (id: number) => AXIOS().get(empSite + id);
 export const deleteEmpBackend = (id: number) => AXIOS().delete(empSite + id);
 export const updateEmpBackend = (emp: employee) => {
   const { id, ...rest } = emp;
@@ -23,17 +22,14 @@ export const createEmpBackend = (emp: employee) => {
 };
 
 export const checkTokenBackend = () => AXIOS().get(authSite + "token");
+export const logoutBackend = () => AXIOS().post(authSite + "logout");
 export const getUserBackend = (un: string) => AXIOS().get(authSite + un);
 export const createUserBackend = (user: {
   username: string;
   password: string;
   department: DEPARTMENT;
-}) => {
-  return AXIOS().post(authSite, user);
-};
+}) => AXIOS().post(authSite, user);
 export const loginUserBackend = (user: {
   username: string;
   password: string;
-}) => {
-  return AXIOS().post(authSite + "login", user);
-};
+}) => AXIOS().post(authSite + "login", user);

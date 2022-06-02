@@ -6,11 +6,13 @@ function PasswordInput(props: {
   password: string;
   setPassword: Function;
   label: string;
+  autoComplete: boolean;
 }) {
-  const { password, setPassword, label } = props;
+  const { password, setPassword, label, autoComplete } = props;
   const [showPassword, setShowPassword] = useState(false);
   return (
     <TextField
+      autoComplete={autoComplete ? "on" : "off"}
       variant="outlined"
       fullWidth
       sx={{ maxWidth: "20rem", width: "100vw" }}

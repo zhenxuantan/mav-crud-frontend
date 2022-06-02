@@ -13,7 +13,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
 import {
   createEmpBackend,
-  getIdEmpBackend,
+  getEmpBackend,
   updateEmpBackend,
 } from "../utils/backend";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,7 +45,7 @@ function Editor(props: { create: boolean }) {
   useEffect(() => {
     if (create) return setEmployee(emptyEmployee);
     userId &&
-      getIdEmpBackend(+userId)
+      getEmpBackend(+userId)
         .then((response) => {
           return response.data;
         })
@@ -68,7 +68,7 @@ function Editor(props: { create: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [create, dispatch, employees, nav, userId]);
 
-  const BackButton = styled(Button)({
+  const StyledButton = styled(Button)({
     textTransform: "none",
   });
 
@@ -84,7 +84,8 @@ function Editor(props: { create: boolean }) {
     return employee.salary < 0 || employee.salary > 2000000000;
   }
 
-  function handleSubmit() {
+  function handleSubmit(event: any) {
+    event.preventDefault();
     employee.salary = Math.round(employee.salary);
     if (create) {
       createEmpBackend(employee)
@@ -135,87 +136,93 @@ function Editor(props: { create: boolean }) {
   }
 
   return (
-    <Grid
-      container
-      direction="column"
-      alignContent="center"
-      alignItems="center"
-      spacing={2}
-      pt={2}
-    >
-      <Grid item>
-        <Text variant="h5" color="primary">
-          <b>
-            {create ? "Enter new employee details" : "Edit employee details"}
-          </b>
-        </Text>
-      </Grid>
-      <Grid item>
-        <TextField
-          sx={{ maxWidth: "20rem", width: "100vw" }}
-          autoFocus
-          variant="standard"
-          label="Name (4 - 30 characters)"
-          value={employee.name}
-          onChange={(event) =>
-            setEmployee({ ...employee, name: event.target.value })
-          }
-          helperText={
-            "Please ensure that the name is within the character limit and that there are no special characters."
-          }
-        />
-      </Grid>
-      <Grid item>
-        <TextField
-          sx={{ maxWidth: "20rem", width: "100vw" }}
-          variant="standard"
-          label="Salary"
-          type="number"
-          InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
-          }}
-          error={salaryError()}
-          value={employee.salary.toString()}
-          onChange={(event) =>
-            setEmployee({ ...employee, salary: parseInt(event.target.value) })
-          }
-          helperText={salaryError() && "Please enter a valid salary."}
-        />
-      </Grid>
-      <Grid item>
-        <DepartmentSelect state={employee} setState={setEmployee} />
-      </Grid>
+    <form>
       <Grid
         container
-        item
-        direction="row"
-        sx={{ maxWidth: "20rem", width: "100vw" }}
-        justifyContent="center"
+        direction="column"
+        alignContent="center"
+        alignItems="center"
         spacing={2}
+        pt={2}
       >
         <Grid item>
-          <BackButton
-            endIcon={<ArrowBackIcon />}
-            color="primary"
-            variant="outlined"
-            onClick={() => nav("/", { replace: true })}
-          >
-            Back
-          </BackButton>
+          <Text variant="h5" color="primary">
+            <b>
+              {create ? "Enter new employee details" : "Edit employee details"}
+            </b>
+          </Text>
         </Grid>
         <Grid item>
-          <BackButton
-            endIcon={<SaveIcon />}
-            color="primary"
-            variant="contained"
-            onClick={handleSubmit}
-            disabled={nameError() || salaryError()}
-          >
-            Submit
-          </BackButton>
+          <TextField
+            sx={{ maxWidth: "20rem", width: "100vw" }}
+            autoFocus
+            variant="standard"
+            label="Name (4 - 30 characters)"
+            value={employee.name}
+            onChange={(event) =>
+              setEmployee({ ...employee, name: event.target.value })
+            }
+            helperText={
+              "Please ensure that the name is within the character limit and that there are no special characters."
+            }
+          />
+        </Grid>
+        <Grid item>
+          <TextField
+            sx={{ maxWidth: "20rem", width: "100vw" }}
+            variant="standard"
+            label="Salary"
+            type="number"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">$</InputAdornment>
+              ),
+            }}
+            error={salaryError()}
+            value={employee.salary.toString()}
+            onChange={(event) =>
+              setEmployee({ ...employee, salary: parseInt(event.target.value) })
+            }
+            helperText={salaryError() && "Please enter a valid salary."}
+          />
+        </Grid>
+        <Grid item>
+          <DepartmentSelect state={employee} setState={setEmployee} />
+        </Grid>
+        <Grid
+          container
+          item
+          direction="row"
+          sx={{ maxWidth: "20rem", width: "100vw" }}
+          justifyContent="center"
+          spacing={2}
+        >
+          <Grid item>
+            <StyledButton
+              endIcon={<ArrowBackIcon />}
+              color="primary"
+              variant="outlined"
+              onClick={() => nav("/", { replace: true })}
+              type="button"
+            >
+              Back
+            </StyledButton>
+          </Grid>
+          <Grid item>
+            <StyledButton
+              endIcon={<SaveIcon />}
+              color="primary"
+              variant="contained"
+              onClick={(event) => handleSubmit(event)}
+              disabled={nameError() || salaryError()}
+              type="submit"
+            >
+              Submit
+            </StyledButton>
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 }
 

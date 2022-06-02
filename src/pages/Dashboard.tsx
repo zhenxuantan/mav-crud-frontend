@@ -34,6 +34,7 @@ function Dashboard() {
         dispatch(setEmployees(result.employees));
       })
       .catch((error) => {
+        console.log(error);
         if (error.response.status === 403) {
           nav("/login", { replace: true });
           return dispatch(openSnackbarError("Need to login"));
